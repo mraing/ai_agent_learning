@@ -10,7 +10,6 @@ const model = new ChatOpenAI({
   temperature: 0.7,
   apiKey: process.env.DEEPSEEK_API,
   modelName: process.env.MODEL_NAME,
-  temperature: 0,
   configuration: {
     baseURL: process.env.BASE_URL,
   },
