@@ -1,16 +1,8 @@
-/*
- * @Author: 绪锋 910408228@qq.com
- * @Date: 2026-09-16 23:52:13
- * @LastEditors: 绪锋 910408228@qq.com
- * @LastEditTime: 2026-09-16 23:53:46
- * @FilePath: /ai agent learning/3. milvus-test/src/query.mjs
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
 import "dotenv/config";
 import { MilvusClient, MetricType } from '@zilliz/milvus2-sdk-node';
 import { OpenAIEmbeddings } from "@langchain/openai";
 
-const COLLECTION_NAME = 'ai_diary';
+const COLLECTION_NAME = 'ebook_collection';
 const VECTOR_DIM = 1024;
 
 const embeddings = new OpenAIEmbeddings({
@@ -37,27 +29,39 @@ async function main() {
     await client.connectPromise;
     console.log('✓ Connected\n');
 
+    // 确保集合已加载
+    try {
+      await client.loadCollection({ collection_name: COLLECTION_NAME });
+      console.log('✓ 集合已加载\n');
+    } catch (error) {
+      // 如果已经加载，会报错，忽略即可
+      if (!error.message.includes('already loaded')) {
+        throw error;
+      }
+      console.log('✓ 集合已处于加载状态\n');
+    }
+
     // 向量搜索
-    console.log('Searching for similar diary entries...');
-    const query = '我想看看关于户外活动的日记';
+    console.log('Searching for similar ebook content...');
+    const query = '段誉会什么武功？';
     console.log(`Query: "${query}"\n`);
 
     const queryVector = await getEmbedding(query);
     const searchResult = await client.search({
       collection_name: COLLECTION_NAME,
       vector: queryVector,
-      limit: 2,
+      limit: 3,
       metric_type: MetricType.COSINE,
-      output_fields: ['id', 'content', 'date', 'mood', 'tags']
+      output_fields: ['id', 'book_id', 'chapter_num', 'index', 'content']
     });
 
     console.log(`Found ${searchResult.results.length} results:\n`);
     searchResult.results.forEach((item, index) => {
       console.log(`${index + 1}. [Score: ${item.score.toFixed(4)}]`);
       console.log(`   ID: ${item.id}`);
-      console.log(`   Date: ${item.date}`);
-      console.log(`   Mood: ${item.mood}`);
-      console.log(`   Tags: ${item.tags?.join(', ')}`);
+      console.log(`   Book ID: ${item.book_id}`);
+      console.log(`   Chapter: 第 ${item.chapter_num} 章`);
+      console.log(`   Index: ${item.index}`);
       console.log(`   Content: ${item.content}\n`);
     });
 
