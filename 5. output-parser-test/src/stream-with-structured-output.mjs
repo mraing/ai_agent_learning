@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { ChatOpenAI } from '@langchain/openai';
 import { z } from 'zod';
+import { toJsonSchema } from '@langchain/core/utils/json_schema';
 
 const model = new ChatOpenAI({
   apiKey: process.env.DEEPSEEK_API,
@@ -22,11 +23,20 @@ const schema = z.object({
   biography: z.string().describe("简短传记")
 });
 
-const structuredModel = model.withStructuredOutput(schema);
+// 注意：DeepSeek 网关仅支持 jsonMode 策略（response_format.type = "json_object"）
+// 默认的 jsonSchema 策略会导致 400 错误，因此显式指定 { method: 'jsonMode' }
+const structuredModel = model.withStructuredOutput(schema, { method: 'jsonMode' });
 
-const prompt = `详细介绍莫扎特的信息。`;
+// jsonMode 只保证输出合法 JSON，不保证字段名与 schema 一致，
+// 需把 toJsonSchema(schema) 的结果写进 prompt 约束字段名
+const prompt = `详细介绍莫扎特的信息。
 
-console.log("🌊 流式结构化输出演示（withStructuredOutput）\n");
+必须严格输出符合以下 JSON Schema 的 JSON 对象，字段名必须完全一致，不要增加或修改字段：
+${JSON.stringify(toJsonSchema(schema), null, 2)}
+
+请直接返回 JSON 数据，不要包含任何解释性文字。`;
+
+console.log("🌊 流式结构化输出演示（withStructuredOutput - jsonMode 兼容 DeepSeek）\n");
 
 try {
   const stream = await structuredModel.stream(prompt);
