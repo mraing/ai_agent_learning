@@ -1,3 +1,4 @@
+// DeepSeek API 不支持默认的 json_schema response_format
 import 'dotenv/config';
 import { ChatOpenAI } from '@langchain/openai';
 import { z } from 'zod';
@@ -20,11 +21,10 @@ const scientistSchema = z.object({
 });
 
 // 使用 withStructuredOutput 方法
-// DeepSeek API 不支持默认的 json_schema response_format，改用 jsonMode（json_object）
-const structuredModel = model.withStructuredOutput(scientistSchema, { method: 'jsonMode' });
+const structuredModel = model.withStructuredOutput(scientistSchema);
 
-// 调用模型（jsonMode 要求提示词含 "json" 字样，需同时明确字段名）
-const result = await structuredModel.invoke("用 JSON 格式介绍爱因斯坦，字段: name(全名), birth_year(出生年份,数字), nationality(国籍), fields(研究领域数组)");
+// 调用模型
+const result = await structuredModel.invoke("介绍一下爱因斯坦");
 
 console.log("结构化结果:", JSON.stringify(result, null, 2));
 console.log(`\n姓名: ${result.name}`);
