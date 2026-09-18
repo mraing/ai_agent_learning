@@ -1,0 +1,20 @@
+{
+  "name": "6.-runnable-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@langchain/core": "^1.2.11",
+    "@langchain/mcp-adapters": "^1.1.4",
+    "@langchain/openai": "^1.5.13",
+    "chalk": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "zod": "^4.6.5"
+  }
+}
