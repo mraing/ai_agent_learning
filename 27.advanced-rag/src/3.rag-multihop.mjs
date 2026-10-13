@@ -28,7 +28,7 @@ import { Milvus } from "@langchain/community/vectorstores/milvus";
 // 对话模型：temperature=0，用于路由、拆解、规划、生成四类调用
 const llm = new ChatOpenAI({
   temperature: 0,
-  model: "qwen-plus",
+  model: process.env.MODEL_NAME,
   configuration: {
     baseURL: process.env.OPENAI_BASE_URL,
   },
@@ -37,12 +37,12 @@ const llm = new ChatOpenAI({
 
 // 向量模型：把查询和文档编码到同一 1024 维空间
 const embeddings = new OpenAIEmbeddings({
-  model: "text-embedding-v3",
+  model: process.env.EMBEDDING_MODEL_NAME,
   dimensions: 1024,
   configuration: {
-    baseURL: process.env.OPENAI_BASE_URL,
+    baseURL: process.env.EMBEDDING_MODEL_URL,
   },
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.EMBEDDING_MODEL_API,
 });
 
 // 图状态。键名全自定义；裸 Annotation = LastValue 通道（覆盖式写入、无默认值）。

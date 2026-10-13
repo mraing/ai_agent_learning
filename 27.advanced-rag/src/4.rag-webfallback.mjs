@@ -31,17 +31,17 @@ import { Milvus } from "@langchain/community/vectorstores/milvus";
 // 对话模型：temperature=0，用于路由、评估、生成
 const llm = new ChatOpenAI({
   temperature: 0,
-  model: "qwen-plus",
+  model: process.env.MODEL_NAME,
   configuration: { baseURL: process.env.OPENAI_BASE_URL },
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 // 向量模型：本地检索用
 const embeddings = new OpenAIEmbeddings({
-  model: "text-embedding-v3",
+  model: process.env.EMBEDDING_MODEL_NAME,
   dimensions: 1024,
-  configuration: { baseURL: process.env.OPENAI_BASE_URL },
-  apiKey: process.env.OPENAI_API_KEY,
+  configuration: { baseURL: process.env.EMBEDDING_MODEL_URL },
+  apiKey: process.env.EMBEDDING_MODEL_API,
 });
 
 /**

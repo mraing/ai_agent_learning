@@ -25,7 +25,7 @@ import { Milvus } from "@langchain/community/vectorstores/milvus";
 // 对话模型：temperature=0 让路由判断和回答都尽量稳定
 const llm = new ChatOpenAI({
   temperature: 0,
-  model: "qwen-plus",
+  model: process.env.MODEL_NAME,
   configuration: {
       baseURL: process.env.OPENAI_BASE_URL,
   },
@@ -34,12 +34,12 @@ const llm = new ChatOpenAI({
 
 // 向量模型：问题和文档片段都要编码成 1024 维向量才能算相似度
 const embeddings = new OpenAIEmbeddings({
-  model: "text-embedding-v3",
+  model: process.env.EMBEDDING_MODEL_NAME,
   dimensions: 1024,
   configuration: { 
-    baseURL: process.env.OPENAI_BASE_URL 
+    baseURL: process.env.EMBEDDING_MODEL_URL 
   },
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.EMBEDDING_MODEL_API,
 });
 
 /**
@@ -268,7 +268,8 @@ const graph = new StateGraph(GraphState)
 
 async function main() {
   // 这句是「多跳+指代」的问题，路由大概率会判成 complex（先查雁门关主谋 → 再查其子结局）
-  const question = "雁门关事件的主谋，他的儿子最终结局是什么？";
+  // const question = "雁门关事件的主谋，他的儿子最终结局是什么？";
+  const question = "段誉遇到的第一个神仙姐姐画像，是谁的弟子？";
   const k = 5;
 
   // 导出为 Mermaid：可复制到 https://mermaid.live 或 Markdown 的 ```mermaid 代码块

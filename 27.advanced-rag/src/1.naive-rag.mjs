@@ -179,7 +179,7 @@ const graph = new StateGraph(GraphState)
     .compile(); // compile() 之后才得到可 invoke 的可执行图
 
 async function main() {
-    const question = "天山童姥是如何让小和尚破戒的？";
+    const question = "段誉遇到的第一个神仙姐姐画像，是谁的弟子？";
     const kArg = 5; // 想改召回条数就改这里（由下面的 k 传入图状态）
 
     // 导出为 Mermaid：可复制到 https://mermaid.live 或 Markdown 的 ```mermaid 代码块
