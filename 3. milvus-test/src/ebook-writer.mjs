@@ -97,7 +97,7 @@ async function ensureCollection(bookId) {
 async function insertChunksBatch(chunks, bookId, chapterNum) {
   try {
     if (chunks.length === 0) {
-      return0;
+      return 0;
     }
 
     // 为每个文档块生成向量并构建插入数据

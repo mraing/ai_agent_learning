@@ -135,6 +135,19 @@ async function main() {
     await client.connectPromise;
     console.log('✓ 已连接\n');
 
+    // 集合不存在时给出可执行的修复提示，而不是抛出 CollectionNotExists
+    const { value: collectionExists } = await client.hasCollection({
+      collection_name: COLLECTION_NAME
+    });
+    if (!collectionExists) {
+      console.error(`✗ 集合 ${COLLECTION_NAME} 不存在，无法检索。`);
+      console.error('请先运行数据导入脚本，创建集合并写入《天龙八部》数据：');
+      console.error('  node ./src/ebook-writer.mjs');
+      process.exitCode = 1;
+      return;
+    }
+    console.log(`✓ 集合 ${COLLECTION_NAME} 已存在\n`);
+
     // 确保集合已加载
     try {
       await client.loadCollection({ collection_name: COLLECTION_NAME });

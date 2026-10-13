@@ -19,6 +19,8 @@ LangChain + DeepSeek 等 AI Agent 实验代码集合（`1. tool-test`、`2. rag-
 - `4. memory-test/` —— 会话记忆/上下文记忆测试
 - `5. output-parser-test/` —— 输出解析测试（结构化输出、JSON/XML/Tool Calls 流式解析、智能导入、mini-cursor Agent）
 - `25. agui/` —— AG-UI 前后端演示：`agui-backend/`（NestJS，`POST /ai/chat` 流式接口）+ `agui-frontend/`（React + Vite，`@ai-sdk/react` 的 `useChat` 消费流式响应，Streamdown 渲染 Markdown/代码高亮/Mermaid）
+- `26.langgraph-test/` —— LangGraph 入门实验（`src/1.`～`7.`：StateGraph、条件路由、checkpointer、interrupt、预置 ToolNode/Agent、多 Agent Supervisor）；第 7 章配[图解教学笔记](26.langgraph-test/docs/7-supervisor-教学.md)
+- `27.advanced-rag/` —— 高级 RAG 实验（`src/`：`1.naive-rag.mjs` 检索→生成基础流水线、`rag-query-router.mjs` 查询路由（simple 直答 / complex 检索）、`rag-multihop.mjs` 多跳问题拆解为有序子问题逐轮检索、`rag-webfallback.mjs` 本地检索不足时联网搜索兜底）；四个脚本均带中文教学注释
 
 
 ```js
