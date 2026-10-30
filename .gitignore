@@ -3,3 +3,5 @@ node_modules/
 .DS_Store
 .pnpm-store/
 .scratch/
+# docker compose 挂载出来的数据目录（如 29.es-test/volumes）
+volumes/

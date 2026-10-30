@@ -21,6 +21,7 @@ LangChain + DeepSeek 等 AI Agent 实验代码集合（`1. tool-test`、`2. rag-
 - `25. agui/` —— AG-UI 前后端演示：`agui-backend/`（NestJS，`POST /ai/chat` 流式接口）+ `agui-frontend/`（React + Vite，`@ai-sdk/react` 的 `useChat` 消费流式响应，Streamdown 渲染 Markdown/代码高亮/Mermaid）
 - `26.langgraph-test/` —— LangGraph 入门实验（`src/1.`～`7.`：StateGraph、条件路由、checkpointer、interrupt、预置 ToolNode/Agent、多 Agent Supervisor）；第 7 章配[图解教学笔记](26.langgraph-test/docs/7-supervisor-教学.md)
 - `27.advanced-rag/` —— 高级 RAG 实验（`src/`：`1.naive-rag.mjs` 检索→生成基础流水线、`rag-query-router.mjs` 查询路由（simple 直答 / complex 检索）、`rag-multihop.mjs` 多跳问题拆解为有序子问题逐轮检索、`rag-webfallback.mjs` 本地检索不足时联网搜索兜底）；四个脚本均带中文教学注释
+- `29.es-test/` —— Elasticsearch 8.17 + IK 中文分词（`elasticsearch/Dockerfile` 自行构建镜像）、Kibana、Milvus 一体化实验环境（`docker-compose.yml`）；`src/` 含 ES 基础增删改查（`create.mjs`/`operate.mjs`）、RAG 混合检索与查询改写（`rag/`）、DashScope 重排（`rerank/`）
 
 
 ```js
@@ -127,3 +128,37 @@ docker run -d \
 -v ...:/var/lib/mysql：核心挂载，将数据持久化到宿主机，避免容器删除后数据丢失。
 
 --character-set-server=utf8mb4：设置字符集，避免中文乱码。
+
+### ES 镜像拉取超时（Docker Hub 国内不可达）
+
+`29.es-test` 首次 `docker compose up -d` 时可能报：
+
+```
+failed to solve: DeadlineExceeded: failed to fetch anonymous token:
+Get "https://auth.docker.io/token?scope=repository%3Alibrary%2Felasticsearch%3Apull...": dial tcp ...: i/o timeout
+```
+
+这是 `auth.docker.io` / `registry-1.docker.io` 在当前网络下不通导致的，与镜像本身无关。处理方式：
+
+1. ES 基础镜像已改用 Elastic 官方仓库（内容与 Docker Hub 上的一致，且同时提供 amd64/arm64）：
+
+```
+ARG ES_IMAGE=docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+FROM ${ES_IMAGE}
+```
+
+需要换回 Docker Hub 或走加速器时：
+`docker compose build --build-arg ES_IMAGE=<registry>/library/elasticsearch:8.17.0`
+
+2. 其余镜像（`kibana`、`minio/minio`、`milvusdb/milvus`）仍来自 Docker Hub，可在
+   Docker Desktop → Settings → Docker Engine 里配置镜像加速器（保存后需重启 Docker 生效）：
+
+```json
+{
+  "registry-mirrors": ["https://docker.m.daocloud.io", "https://docker.1ms.run"]
+}
+```
+
+3. 本项目 `docker-compose.yml` 里的 `minio`（9000/9001）和 `standalone`（19530/9091）端口，
+   与 `~/Documents/milvus-docker` 那套 Milvus 栈冲突；只想用 ES 时执行
+   `docker compose up -d es kibana` 即可。
